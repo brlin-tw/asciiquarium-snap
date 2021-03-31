@@ -1,0 +1,268 @@
+%YAML 1.1
+---
+# Snapcraft Recipe for [Project]
+# ------------------------------
+# This file is in the YAML data serialization format:
+# http://yaml.org
+# For the spec. of writing this file refer the following documentation:
+# * The snapcraft format
+#   https://docs.snapcraft.io/the-snapcraft-format/8337
+# * Snap Documentation
+#   https://docs.snapcraft.io
+# * Topics under the doc category in the Snapcraft Forum
+#   https://forum.snapcraft.io/c/doc
+# For support refer to the snapcraft section in the Snapcraft Forum:
+# https://forum.snapcraft.io/c/snapcraft
+
+# All following comments, including this one, are designed to be stripped
+# before contributing the recipe to the upstream
+
+# [Project], my-awesome-app, my-awesome-app-launch
+# are placeholders text meant to be replaced by appropriate content
+name: my-awesome-app
+title: My Awesome App.
+summary: Single-line elevator pitch for your amazing snap under 79 chars.
+description: |
+  This is my-awesome-app's description. You have a paragraph or two to tell
+  the most important story about your snap. Keep it under 100 words though,
+  we live in tweetspace and your description wants to look good in the snap
+  store.
+
+  This is the demonstration app of the Snapcrafters Template Plus:
+  https://github.com/Lin-Buo-Ren/snapcrafters-template-plus
+
+# The path of icon to represent the snap, relative to the source tree directory
+# Only PNG or SVG image is supported, dimension must be greater than 256x256px
+icon: snap/gui/my-awesome-app.png
+
+# The license of this application, in SPDX format
+# NOTE: Currently only supports SPDX 2.1 license expressions, as described in Appendix IV of
+# https://spdx.org/spdx-specification-21-web-version
+# Supported expressions:
+# https://github.com/snapcore/snapd/blob/HEAD/spdx/licenses.go
+#license:
+
+# Version string just for humans, typically '1.2+git' or '1.3.2'
+# The wrapping single quotes are often required to avoid the version string
+# being accidentally interpreted as a YAML non-string(like '1', '1.2').
+# http://yaml.org/type
+# https://arp242.net/weblog/yaml_probably_not_so_great_after_all.html#surprising-behaviour
+# NOTE: This key is mutual exclusive with the `adopt-info` key
+#version: Derived from the part specified by the `adopt-info` property
+
+# Extract metadata from the main snap part
+# https://forum.snapcraft.io/t/extracting-information-from-sources-in-snapcraft-parts/4642
+adopt-info: main
+
+# Snapd feature set and version the snap requires in order to work
+# https://forum.snapcraft.io/t/snapcraft-top-level-metadata/8334#heading--assumes
+assumes:
+- command-chain
+
+# Base runtime
+# The common runtime for the snap to run on, or `bare` for static linked applications
+base: core18
+# https://docs.snapcraft.io/snapcraft-top-level-metadata/8334#heading--base
+
+# Security confinement
+# Use `devmode` to getting started
+# Flip to `strict` once you have the right plugs and slots,
+# or `classic` once you determine that strict confinement is not currently possible
+confinement: strict
+
+# Snap Grade
+# Use `devel` to getting started
+# Flip to `stable` once you determine that the snap is matured, only `stable` grade
+# snaps can be promoted to `candidate` and `stable` channels
+grade: stable
+
+# Run `snapcraft help sources` for supported keywords on pulling a part's source ingredients
+# Run `snapcraft plugins` for supported build helper plugins
+# Run `snapcraft help plugins` for supported keywords on building a part
+# For `override-*` scriptlets used to modify behavior of certain part's lifecycle phase, check out:
+# https://docs.snapcraft.io/scriptlets/4892
+parts:
+  # Files to patch the files in the snap
+  patching:
+    source: snap/local/patching
+    plugin: dump
+    organize:
+      '*': patching/
+    prime:
+    - -*
+
+  # Launcher programs to fix problems at runtime
+  launchers:
+    source: snap/local/launchers
+    plugin: dump
+    organize:
+      '*': bin/
+    stage:
+    - -bin/README.*
+
+  # Programs to modify the behavior of each step of the snapcraft lifecycles
+  scriptlets:
+    source: snap/local/scriptlets
+    plugin: dump
+    organize:
+      '*': scriptlets/
+    prime:
+    - -*
+
+  # Stage snap for fixing the glibc locales(and gnu gettext I18N support)
+  # This part is only required for non GUI apps that don't uses the desktop-launch launchers
+  #locales-launch:
+    #plugin: nil
+    #stage-snaps:
+    #- locales-launch
+    #stage-packages:
+    # For localedef(1)
+    #- libc-bin
+
+    # For locale data used by localedef(1)
+    #- locales
+
+    # All pre-generated locale data
+    # DISABLED: Lots of duplicate data will be included in snap when this is staged, unless the target machine has no resource to generate them in runtime otherwise not using it
+    #
+    #   Lack of compiled locales breaks gettext based localisation - snapcraft - snapcraft.io
+    #   https://forum.snapcraft.io/t/lack-of-compiled-locales-breaks-gettext-based-localisation/3758
+    #
+    #- locales-all
+
+  # Remote part for support of various desktop technologies
+  # Refer: https://github.com/ubuntu/snapcraft-desktop-helpers/blob/master/snapcraft.yaml
+  desktop-gnome-platform:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-depth: 1
+    source-subdir: gtk
+
+    plugin: make
+    build-packages:
+    - gcc
+    override-build: |
+      snapcraftctl build
+      mkdir -pv $SNAPCRAFT_PART_INSTALL/gnome-platform
+
+  # Integrate custom dialogs in your snap - doc - snapcraft.io
+  # https://forum.snapcraft.io/t/integrate-custom-dialogs-in-your-snap/10825
+  zenity-integration:
+    plugin: nil
+    stage-snaps:
+    - zenity-integration
+
+  main:
+    after:
+    # for patch-desktop-entries.*
+    - patching
+
+    # for override-pull script
+    - scriptlets
+
+    source: .
+    #source-type:
+    #source-branch:
+    #source-tag:
+    #source-depth:
+    override-pull: |
+      set -o nounset
+
+      snapcraftctl pull
+
+      "${SNAPCRAFT_STAGE}"/scriptlets/main-adopt-info
+
+    plugin: dump
+    organize:
+      my-awesome-app: bin/
+    stage:
+    - bin/*
+
+    override-prime: |
+      set \
+        -o nounset
+
+      snapcraftctl prime
+
+      "${SNAPCRAFT_STAGE}"/patching/patch-desktop-entries.bash
+
+# Apps that are exposed by the snap package
+# If the _app_name_ is identical with the _snap_name_ it can be directly run
+# with `_snap_name_` or `snap run _snap_name_` commands, otherwise it can only be run
+# via `_snap_name_._app_name_` or `snap run _snap_name_._app_name_`
+apps:
+  my-awesome-app:
+    # The adapter to set up runtime environment at the launch of the snap
+    # NOTE: The `command-chain` property is only supported by the `full` adapter
+    adapter: full
+
+    # An *relative path* to an executable file root from the `prime` directory to be executed, and its command-line arguments
+    # NOTE: The right angle bracket at the beginning of the value of the `command` keyword starts a YAML folded style block scalar, refer the following spec document for more info: http://yaml.org/spec/1.2/spec.html#id2796251
+    command: bin/my-awesome-app
+
+    # The commands that are run, in order, before running the one specified by the `command` key
+    command-chain:
+    - bin/desktop-launch
+    - bin/my-awesome-app-launch
+
+    # If the providing part of the app. has a desktop entry, specify its path relative to the `prime` directory.
+    # If the packaging target doesn't provide a desktop entry, ignore the `desktop` key and implement a desktop entry in `/snap/gui`
+    #desktop: share/applications/my-awesome-app.desktop
+
+# Refer the following documentation for asserting interface plugs and slots in a security confined snap:
+# Interface management - doc - snapcraft.io
+# https://docs.snapcraft.io/interface-management/6154
+# Supported interfaces - doc - snapcraft.io
+# https://docs.snapcraft.io/supported-interfaces/7744
+# Non-A/C: Non-autoconnect interface
+plugs:
+  # Common desktop interfaces
+  # https://forum.snapcraft.io/t/the-desktop-interfaces/2042
+  desktop:
+  desktop-legacy:
+  unity7:
+  wayland:
+
+  # GNOME and Gtk runtime via content sharing
+  # https://forum.snapcraft.io/t/desktop-app-support-gtk/6834
+  gnome-3-28-1804:
+    interface: content
+    target: $SNAP/gnome-platform
+    default-provider: gnome-3-28-1804
+
+  # Gtk Common Themes support
+  # https://forum.snapcraft.io/t/how-to-use-the-system-gtk-theme-via-the-gtk-common-themes-snap/6235
+  gsettings:
+  gtk-3-themes:
+    interface: content
+    target: $SNAP/data-dir/themes
+    default-provider: gtk-common-themes
+  icon-themes:
+    interface: content
+    target: $SNAP/data-dir/icons
+    default-provider: gtk-common-themes
+  sound-themes:
+    interface: content
+    target: $SNAP/data-dir/sounds
+    default-provider: gtk-common-themes
+
+  # Regular files access
+  #home:
+  #removable-media: # Non-A/C
+
+  # Application-specific files access
+  # The auto-connection requires store grant
+  # https://forum.snapcraft.io/t/the-personal-files-interface/9357
+  # https://forum.snapcraft.io/t/the-system-files-interface/9358
+  #user-wide-configs:
+    #interface: personal-files
+    #read:
+    #- $HOME/.config/my-awesome-app
+  #system-wide-configs:
+    #interface: system-files
+    #read:
+    #- /etc/my-awesome-app
+
+  # Network access
+  #network:
+
+#slots:
