@@ -118,6 +118,9 @@ parts:
       - perl
     stage-packages:
       - libcurses-perl
+      # Albeit being suggested by Snapcraft, these do not prevent program from running
+      # - libgdbm-compat4
+      # - libgdbm5
     override-build: |
       cpan Term::Animation
     build-environment:
@@ -125,6 +128,11 @@ parts:
       - PERL_MB_OPT: '--install_base ${SNAPCRAFT_PART_INSTALL}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}'
     organize:
       usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/lib/perl5: usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/perl/5
+    prime:
+      - usr/lib/x86_64-linux-gnu/perl/5*
+      - usr/lib/x86_64-linux-gnu/perl5/*/Curses.pm
+      - usr/lib/x86_64-linux-gnu/perl5/*/auto/Curses/**
+      - usr/share/doc/libcurses-perl/copyright
 
   perl-runtime:
     plugin: nil
