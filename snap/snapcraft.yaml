@@ -29,9 +29,9 @@ description: |
 
   There are no command line arguments.
   While running:
-    q	quit
-    r	redraw (will recreate all entities)
-    p	toggle pause
+    q    quit
+    r    redraw (will recreate all entities)
+    p    toggle pause
 
   **Contributors**
 
