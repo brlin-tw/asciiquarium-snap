@@ -57,16 +57,12 @@ license: GPL-2.0-or-later
 # http://yaml.org/type
 # https://arp242.net/weblog/yaml_probably_not_so_great_after_all.html#surprising-behaviour
 # NOTE: This key is mutual exclusive with the `adopt-info` key
-#version: Derived from the part specified by the `adopt-info` property
-
-# Extract metadata from the main snap part
-# https://forum.snapcraft.io/t/extracting-information-from-sources-in-snapcraft-parts/4642
-adopt-info: main
+version: '1.1'
 
 # Snapd feature set and version the snap requires in order to work
 # https://forum.snapcraft.io/t/snapcraft-top-level-metadata/8334#heading--assumes
 assumes:
-- command-chain
+  - command-chain
 
 # Base runtime
 # The common runtime for the snap to run on, or `bare` for static linked applications
@@ -91,15 +87,6 @@ grade: stable
 # For `override-*` scriptlets used to modify behavior of certain part's lifecycle phase, check out:
 # https://docs.snapcraft.io/scriptlets/4892
 parts:
-  # Files to patch the files in the snap
-  patching:
-    source: snap/local/patching
-    plugin: dump
-    organize:
-      '*': patching/
-    prime:
-    - -*
-
   # Launcher programs to fix problems at runtime
   launchers:
     source: snap/local/launchers
@@ -107,92 +94,60 @@ parts:
     organize:
       '*': bin/
     stage:
-    - -bin/README.*
-
-  # Programs to modify the behavior of each step of the snapcraft lifecycles
-  scriptlets:
-    source: snap/local/scriptlets
-    plugin: dump
-    organize:
-      '*': scriptlets/
-    prime:
-    - -*
-
-  # Stage snap for fixing the glibc locales(and gnu gettext I18N support)
-  # This part is only required for non GUI apps that don't uses the desktop-launch launchers
-  #locales-launch:
-    #plugin: nil
-    #stage-snaps:
-    #- locales-launch
-    #stage-packages:
-    # For localedef(1)
-    #- libc-bin
-
-    # For locale data used by localedef(1)
-    #- locales
-
-    # All pre-generated locale data
-    # DISABLED: Lots of duplicate data will be included in snap when this is staged, unless the target machine has no resource to generate them in runtime otherwise not using it
-    #
-    #   Lack of compiled locales breaks gettext based localisation - snapcraft - snapcraft.io
-    #   https://forum.snapcraft.io/t/lack-of-compiled-locales-breaks-gettext-based-localisation/3758
-    #
-    #- locales-all
-
-  # Remote part for support of various desktop technologies
-  # Refer: https://github.com/ubuntu/snapcraft-desktop-helpers/blob/master/snapcraft.yaml
-  desktop-gnome-platform:
-    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
-    source-depth: 1
-    source-subdir: gtk
-
-    plugin: make
-    build-packages:
-    - gcc
-    override-build: |
-      snapcraftctl build
-      mkdir -pv $SNAPCRAFT_PART_INSTALL/gnome-platform
-
-  # Integrate custom dialogs in your snap - doc - snapcraft.io
-  # https://forum.snapcraft.io/t/integrate-custom-dialogs-in-your-snap/10825
-  zenity-integration:
-    plugin: nil
-    stage-snaps:
-    - zenity-integration
+      - -bin/README.*
 
   main:
-    after:
-    # for patch-desktop-entries.*
-    - patching
-
-    # for override-pull script
-    - scriptlets
-
-    source: .
-    #source-type:
-    #source-branch:
-    #source-tag:
-    #source-depth:
-    override-pull: |
-      set -o nounset
-
-      snapcraftctl pull
-
-      "${SNAPCRAFT_STAGE}"/scriptlets/main-adopt-info
-
+    source: https://robobunny.com/projects/asciiquarium/asciiquarium_${SNAPCRAFT_PROJECT_VERSION}.tar.gz
     plugin: dump
     organize:
       asciiquarium: bin/
     stage:
-    - bin/*
-
+      - bin/*
+      - gpl.txt
     override-prime: |
-      set \
-        -o nounset
+      set -o nounset
 
       snapcraftctl prime
+      chmod +x "${SNAPCRAFT_PRIME}"/bin/asciiquarium
 
-      "${SNAPCRAFT_STAGE}"/patching/patch-desktop-entries.bash
+  perl-term-animation:
+    plugin: nil
+    build-packages:
+      - libcurses-perl
+      - make
+      - perl
+    stage-packages:
+      - libcurses-perl
+    override-build: |
+      cpan Term::Animation
+    build-environment:
+      - PERL_MM_OPT: 'INSTALL_BASE=${SNAPCRAFT_PART_INSTALL}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}'
+      - PERL_MB_OPT: '--install_base ${SNAPCRAFT_PART_INSTALL}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}'
+    organize:
+      usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/lib/perl5: usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/perl/5
+
+  perl-runtime:
+    plugin: nil
+    stage-packages:
+      - perl-base
+
+  # The debian-multiarch-triplet-provider-launch launcher: Enable DEBIAN_MULTIARCH_TRIPLET-like environment variable in the snap runtime
+  # https://forum.snapcraft.io/t/the-debian-multiarch-triplet-provider-launch-launcher-enable-debian-multiarch-triplet-like-environment-variable-in-the-snap-runtime/11738
+  debian-multiarch-triplet-provider-launch:
+    source: https://github.com/Lin-Buo-Ren/debian-multiarch-triplet-provider-launch.git
+    source-tag: v1.0.0
+    plugin: dump
+    stage:
+      - bin/debian-multiarch-triplet-provider-launch
+
+  # The perl-launch launcher: Fix Perl applications in the snap runtime
+  # https://forum.snapcraft.io/t/the-perl-launch-launcher-fix-perl-applications-in-the-snap-runtime/11736
+  perl-launch:
+    source: https://github.com/Lin-Buo-Ren/perl-launch.git
+    source-tag: v1.0.1
+    plugin: dump
+    stage:
+      - bin/perl-launch
 
 # Apps that are exposed by the snap package
 # If the _app_name_ is identical with the _snap_name_ it can be directly run
@@ -210,68 +165,10 @@ apps:
 
     # The commands that are run, in order, before running the one specified by the `command` key
     command-chain:
-    - bin/desktop-launch
-    - bin/asciiquarium-launch
+      - bin/debian-multiarch-triplet-provider-launch
+      - bin/perl-launch
+      - bin/asciiquarium-launch
 
-    # If the providing part of the app. has a desktop entry, specify its path relative to the `prime` directory.
-    # If the packaging target doesn't provide a desktop entry, ignore the `desktop` key and implement a desktop entry in `/snap/gui`
-    #desktop: share/applications/asciiquarium.desktop
-
-# Refer the following documentation for asserting interface plugs and slots in a security confined snap:
-# Interface management - doc - snapcraft.io
-# https://docs.snapcraft.io/interface-management/6154
-# Supported interfaces - doc - snapcraft.io
-# https://docs.snapcraft.io/supported-interfaces/7744
-# Non-A/C: Non-autoconnect interface
-plugs:
-  # Common desktop interfaces
-  # https://forum.snapcraft.io/t/the-desktop-interfaces/2042
-  desktop:
-  desktop-legacy:
-  unity7:
-  wayland:
-
-  # GNOME and Gtk runtime via content sharing
-  # https://forum.snapcraft.io/t/desktop-app-support-gtk/6834
-  gnome-3-28-1804:
-    interface: content
-    target: $SNAP/gnome-platform
-    default-provider: gnome-3-28-1804
-
-  # Gtk Common Themes support
-  # https://forum.snapcraft.io/t/how-to-use-the-system-gtk-theme-via-the-gtk-common-themes-snap/6235
-  gsettings:
-  gtk-3-themes:
-    interface: content
-    target: $SNAP/data-dir/themes
-    default-provider: gtk-common-themes
-  icon-themes:
-    interface: content
-    target: $SNAP/data-dir/icons
-    default-provider: gtk-common-themes
-  sound-themes:
-    interface: content
-    target: $SNAP/data-dir/sounds
-    default-provider: gtk-common-themes
-
-  # Regular files access
-  #home:
-  #removable-media: # Non-A/C
-
-  # Application-specific files access
-  # The auto-connection requires store grant
-  # https://forum.snapcraft.io/t/the-personal-files-interface/9357
-  # https://forum.snapcraft.io/t/the-system-files-interface/9358
-  #user-wide-configs:
-    #interface: personal-files
-    #read:
-    #- $HOME/.config/asciiquarium
-  #system-wide-configs:
-    #interface: system-files
-    #read:
-    #- /etc/asciiquarium
-
-  # Network access
-  #network:
-
-#slots:
+    environment:
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
