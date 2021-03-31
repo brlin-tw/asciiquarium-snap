@@ -5,7 +5,7 @@
 -->
 ![(Placeholder) Icon of ASCIIQuarium](gui/asciiquarium.png "(Placeholder) Icon of ASCIIQuarium")
 
-**This is the unofficial snap for ASCIIQuarium**, *"Single-line elevator pitch for your amazing snap"*. It works on Ubuntu, Fedora, Debian, and other major Linux distributions.
+**This is the unofficial snap for ASCIIQuarium**, *"An aquarium/sea animation in ASCII art"*. It works on Ubuntu, Fedora, Debian, and other major Linux distributions.
 
 <!-- Uncomment and modify this when you are provided a snap status badge
 [![Status Badge of the `asciiquarium` Snap](https://snapcraft.io/asciiquarium/badge.svg)](https://snapcraft.io/asciiquarium)
