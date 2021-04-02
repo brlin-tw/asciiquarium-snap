@@ -9,7 +9,7 @@
 
 [![snap release badge](https://snapcraft.io/asciiquarium/badge.svg)](https://snapcraft.io/asciiquarium) [![snap trending badge](https://snapcraft.io/asciiquarium/trending.svg?name=0)](https://snapcraft.io/asciiquarium)
 
-![Screenshot of the Snapped Application](local/screenshots/screenshot.png "Screenshot of the Snapped Application")
+![Screenshot of the Snapped Application](local/screenshots/whale.png "Screenshot of the Snapped Application")
 
 Published for <img src="http://anything.codes/slack-emoji-for-techies/emoji/tux.png" align="top" width="24" /> with 💝 by Snapcrafters
 
