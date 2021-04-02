@@ -23,7 +23,7 @@ Snapcrafters ([join us](https://forum.snapcraft.io/t/join-snapcrafters/1325)) ar
 - [x] Convert the snap to `strict` confinement, or `classic` confinement if it qualifies
 - [ ] (skipped) Publish the confined snap in the Snap Store beta channel
 - [x] Update the install instructions in `snap/README.md`
-- [ ] Post a call for testing on the [Snapcraft Forum](https://forum.snapcraft.io) - [template](https://github.com/Lin-Buo-Ren/snapcrafters-template-plus/wiki/Call-for-Testing-Template) - [link]()
+- [x] Post a call for testing on the [Snapcraft Forum](https://forum.snapcraft.io) - [template](https://github.com/Lin-Buo-Ren/snapcrafters-template-plus/wiki/Call-for-Testing-Template) - [link](https://forum.snapcraft.io/t/call-for-testing-asciiquarium-unofficial/23666)
 - [x] Publish the snap in the Snap Store stable channel
 - [x] Update the install instructions in `snap/README.md`
 - [ ] Post an announcement in the [Snapcraft Forum](https://forum.snapcraft.io) - [template](https://github.com/Lin-Buo-Ren/snapcrafters-template-plus/wiki/Release-Announcement-Template) - [link]()
