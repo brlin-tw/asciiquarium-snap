@@ -129,7 +129,7 @@ parts:
           --abbrev=4
       )"
       snapcraftctl set-version \
-        "1.1-snap-g${snap_recipe_revision}"
+        "1.1-snap${snap_recipe_revision}"
     plugin: dump
     build-packages:
       - git
