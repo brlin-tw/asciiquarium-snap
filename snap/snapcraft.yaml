@@ -71,7 +71,8 @@ license: GPL-2.0-or-later
 # http://yaml.org/type
 # https://arp242.net/weblog/yaml_probably_not_so_great_after_all.html#surprising-behaviour
 # NOTE: This key is mutual exclusive with the `adopt-info` key
-version: '1.1'
+#version: '1.1'
+adopt-info: main
 
 # Snapd feature set and version the snap requires in order to work
 # https://forum.snapcraft.io/t/snapcraft-top-level-metadata/8334#heading--assumes
@@ -116,8 +117,22 @@ parts:
       - -bin/README.*
 
   main:
-    source: https://robobunny.com/projects/asciiquarium/asciiquarium_${SNAPCRAFT_PROJECT_VERSION}.tar.gz
+    source: https://robobunny.com/projects/asciiquarium/asciiquarium_1.1.tar.gz
+    override-pull: |
+      set -o nounset
+
+      snapcraftctl pull
+
+      snap_recipe_revision="$(
+        git -C "${SNAPCRAFT_PROJECT_DIR}" describe \
+          --always \
+          --abbrev=4
+      )"
+      snapcraftctl set-version \
+        "1.1-snap-g${snap_recipe_revision}"
     plugin: dump
+    build-packages:
+      - git
     organize:
       asciiquarium: bin/
     stage:
