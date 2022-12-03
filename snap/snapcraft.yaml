@@ -42,6 +42,14 @@ description: |
 
   Anything that she didn't do, I don't have a source for.
 
+  **Snap maintaner note**
+
+  This is NOT an official distribution of ASCIIquarium, for support
+  on using this snap please refer to the snap's own issue tracker:
+
+      Issues · brlin-tw/asciiquarium-snap
+      https://github.com/brlin-tw/asciiquarium-snap/issues
+
 # The path of icon to represent the snap, relative to the source tree
 # directory
 # Only PNG or SVG image is supported, dimension must be greater than
