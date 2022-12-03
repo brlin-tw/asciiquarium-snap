@@ -131,9 +131,9 @@ parts:
     organize:
       usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/lib/perl5: usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/perl/5
     prime:
-      - usr/lib/x86_64-linux-gnu/perl/5*
-      - usr/lib/x86_64-linux-gnu/perl5/*/Curses.pm
-      - usr/lib/x86_64-linux-gnu/perl5/*/auto/Curses/**
+      - usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/perl/5*
+      - usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/perl5/*/Curses.pm
+      - usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/perl5/*/auto/Curses/**
       - usr/share/doc/libcurses-perl/copyright
 
   perl-runtime:
