@@ -14,8 +14,8 @@
 # For support refer to the snapcraft section in the Snapcraft Forum:
 # https://forum.snapcraft.io/c/snapcraft
 
-# All following comments, including this one, are designed to be stripped
-# before contributing the recipe to the upstream
+# All following comments, including this one, are designed to be
+# stripped before contributing the recipe to the upstream
 
 # ASCIIQuarium, asciiquarium, asciiquarium-launch
 # are placeholders text meant to be replaced by appropriate content
@@ -42,20 +42,24 @@ description: |
 
   Anything that she didn't do, I don't have a source for.
 
-# The path of icon to represent the snap, relative to the source tree directory
-# Only PNG or SVG image is supported, dimension must be greater than 256x256px
+# The path of icon to represent the snap, relative to the source tree
+# directory
+# Only PNG or SVG image is supported, dimension must be greater than
+# 256x256px
 icon: snap/gui/asciiquarium.png
 
 # The license of this application, in SPDX format
-# NOTE: Currently only supports SPDX 2.1 license expressions, as described in Appendix IV of
+# NOTE: Currently only supports SPDX 2.1 license expressions, as
+# described in Appendix IV of
 # https://spdx.org/spdx-specification-21-web-version
 # Supported expressions:
 # https://github.com/snapcore/snapd/blob/HEAD/spdx/licenses.go
 license: GPL-2.0-or-later
 
 # Version string just for humans, typically '1.2+git' or '1.3.2'
-# The wrapping single quotes are often required to avoid the version string
-# being accidentally interpreted as a YAML non-string(like '1', '1.2').
+# The wrapping single quotes are often required to avoid the version
+# string being accidentally interpreted as a YAML non-string
+# (like '1', '1.2').
 # http://yaml.org/type
 # https://arp242.net/weblog/yaml_probably_not_so_great_after_all.html#surprising-behaviour
 # NOTE: This key is mutual exclusive with the `adopt-info` key
@@ -67,26 +71,31 @@ assumes:
   - command-chain
 
 # Base runtime
-# The common runtime for the snap to run on, or `bare` for static linked applications
+# The common runtime for the snap to run on, or `bare` for static linked
+# applications
 base: core18
 # https://docs.snapcraft.io/snapcraft-top-level-metadata/8334#heading--base
 
 # Security confinement
 # Use `devmode` to getting started
 # Flip to `strict` once you have the right plugs and slots,
-# or `classic` once you determine that strict confinement is not currently possible
+# or `classic` once you determine that strict confinement is not
+# currently possible
 confinement: strict
 
 # Snap Grade
 # Use `devel` to getting started
-# Flip to `stable` once you determine that the snap is matured, only `stable` grade
-# snaps can be promoted to `candidate` and `stable` channels
+# Flip to `stable` once you determine that the snap is matured, only
+# `stable` grade snaps can be promoted to `candidate` and `stable`
+# channels
 grade: stable
 
-# Run `snapcraft help sources` for supported keywords on pulling a part's source ingredients
+# Run `snapcraft help sources` for supported keywords on pulling a
+# part's source ingredients
 # Run `snapcraft plugins` for supported build helper plugins
 # Run `snapcraft help plugins` for supported keywords on building a part
-# For `override-*` scriptlets used to modify behavior of certain part's lifecycle phase, check out:
+# For `override-*` scriptlets used to modify behavior of certain part's
+# lifecycle phase, check out:
 # https://docs.snapcraft.io/scriptlets/4892
 parts:
   # Launcher programs to fix problems at runtime
@@ -120,7 +129,8 @@ parts:
       - perl
     stage-packages:
       - libcurses-perl
-      # Albeit being suggested by Snapcraft, these do not prevent program from running
+      # Albeit being suggested by Snapcraft, these do not prevent
+      # program from running
       # - libgdbm-compat4
       # - libgdbm5
     override-build: |
@@ -141,7 +151,9 @@ parts:
     stage-packages:
       - perl-base
 
-  # The debian-multiarch-triplet-provider-launch launcher: Enable DEBIAN_MULTIARCH_TRIPLET-like environment variable in the snap runtime
+  # The debian-multiarch-triplet-provider-launch launcher: Enable
+  # DEBIAN_MULTIARCH_TRIPLET-like environment variable in the snap
+  # runtime
   # https://forum.snapcraft.io/t/the-debian-multiarch-triplet-provider-launch-launcher-enable-debian-multiarch-triplet-like-environment-variable-in-the-snap-runtime/11738
   debian-multiarch-triplet-provider-launch:
     source: https://github.com/Lin-Buo-Ren/debian-multiarch-triplet-provider-launch.git
@@ -160,20 +172,24 @@ parts:
       - bin/perl-launch
 
 # Apps that are exposed by the snap package
-# If the _app_name_ is identical with the _snap_name_ it can be directly run
-# with `_snap_name_` or `snap run _snap_name_` commands, otherwise it can only be run
-# via `_snap_name_._app_name_` or `snap run _snap_name_._app_name_`
+# If the _app_name_ is identical with the _snap_name_ it can be directly
+# run with `_snap_name_` or `snap run _snap_name_` commands, otherwise
+# it can only be run via `_snap_name_._app_name_` or `snap run _snap_name_._app_name_`
 apps:
   asciiquarium:
     # The adapter to set up runtime environment at the launch of the snap
     # NOTE: The `command-chain` property is only supported by the `full` adapter
     adapter: full
 
-    # An *relative path* to an executable file root from the `prime` directory to be executed, and its command-line arguments
-    # NOTE: The right angle bracket at the beginning of the value of the `command` keyword starts a YAML folded style block scalar, refer the following spec document for more info: http://yaml.org/spec/1.2/spec.html#id2796251
+    # An *relative path* to an executable file root from the `prime`
+    # directory to be executed, and its command-line arguments
+    # NOTE: The right angle bracket at the beginning of the value of the
+    # `command` keyword starts a YAML folded style block scalar, refer
+    # the following spec document for more info: http://yaml.org/spec/1.2/spec.html#id2796251
     command: bin/asciiquarium
 
-    # The commands that are run, in order, before running the one specified by the `command` key
+    # The commands that are run, in order, before running the one
+    # specified by the `command` key
     command-chain:
       - bin/debian-multiarch-triplet-provider-launch
       - bin/perl-launch
