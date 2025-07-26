@@ -82,7 +82,7 @@ assumes:
 # Base runtime
 # The common runtime for the snap to run on, or `bare` for static linked
 # applications
-base: core20
+base: core22
 # https://docs.snapcraft.io/snapcraft-top-level-metadata/8334#heading--base
 
 # Security confinement
@@ -121,15 +121,14 @@ parts:
     override-pull: |
       set -o nounset
 
-      snapcraftctl pull
+      craftctl default
 
       snap_recipe_revision="$(
-        git -C "${SNAPCRAFT_PROJECT_DIR}" describe \
+        git -C "${CRAFT_PROJECT_DIR}" describe \
           --always \
           --abbrev=4
       )"
-      snapcraftctl set-version \
-        "1.1-snap${snap_recipe_revision}"
+      craftctl set version="1.1-snap${snap_recipe_revision}"
     plugin: dump
     build-packages:
       - git
@@ -141,8 +140,8 @@ parts:
     override-prime: |
       set -o nounset
 
-      snapcraftctl prime
-      chmod +x "${SNAPCRAFT_PRIME}/bin/asciiquarium"
+      craftctl default
+      chmod +x "${CRAFT_PRIME}/bin/asciiquarium"
 
   perl-term-animation:
     plugin: nil
@@ -159,14 +158,14 @@ parts:
     override-build: |
       cpan Term::Animation
     build-environment:
-      - PERL_MM_OPT: 'INSTALL_BASE=${SNAPCRAFT_PART_INSTALL}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}'
-      - PERL_MB_OPT: '--install_base ${SNAPCRAFT_PART_INSTALL}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}'
+      - PERL_MM_OPT: 'INSTALL_BASE=${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}'
+      - PERL_MB_OPT: '--install_base ${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}'
     organize:
-      usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/lib/perl5: usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/perl/5
+      usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/lib/perl5: usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/perl/5
     prime:
-      - usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/perl*/**/*.so
-      - usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/perl*/**/*.pm
-      - usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/perl*/**/*.pl
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/perl*/**/*.so
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/perl*/**/*.pm
+      - usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/perl*/**/*.pl
       - usr/share/doc/libcurses-perl/copyright
 
   perl-runtime:
@@ -200,10 +199,6 @@ parts:
 # it can only be run via `_snap_name_._app_name_` or `snap run _snap_name_._app_name_`
 apps:
   asciiquarium:
-    # The adapter to set up runtime environment at the launch of the snap
-    # NOTE: The `command-chain` property is only supported by the `full` adapter
-    adapter: full
-
     # An *relative path* to an executable file root from the `prime`
     # directory to be executed, and its command-line arguments
     # NOTE: The right angle bracket at the beginning of the value of the
