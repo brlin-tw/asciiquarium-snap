@@ -179,7 +179,7 @@ parts:
   # runtime
   # https://forum.snapcraft.io/t/the-debian-multiarch-triplet-provider-launch-launcher-enable-debian-multiarch-triplet-like-environment-variable-in-the-snap-runtime/11738
   debian-multiarch-triplet-provider-launch:
-    source: https://github.com/Lin-Buo-Ren/debian-multiarch-triplet-provider-launch.git
+    source: https://github.com/brlin-tw/debian-multiarch-triplet-provider-launch.git
     source-tag: v1.0.0
     plugin: dump
     stage:
@@ -188,7 +188,7 @@ parts:
   # The perl-launch launcher: Fix Perl applications in the snap runtime
   # https://forum.snapcraft.io/t/the-perl-launch-launcher-fix-perl-applications-in-the-snap-runtime/11736
   perl-launch:
-    source: https://github.com/Lin-Buo-Ren/perl-launch.git
+    source: https://github.com/brlin-tw/perl-launch.git
     source-tag: v1.0.1
     plugin: dump
     stage:
