@@ -142,7 +142,7 @@ parts:
       set -o nounset
 
       snapcraftctl prime
-      chmod +x "${SNAPCRAFT_PRIME}"/bin/asciiquarium
+      chmod +x "${SNAPCRAFT_PRIME}/bin/asciiquarium"
 
   perl-term-animation:
     plugin: nil
