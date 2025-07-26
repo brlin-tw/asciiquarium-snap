@@ -180,7 +180,7 @@ parts:
   # https://forum.snapcraft.io/t/the-debian-multiarch-triplet-provider-launch-launcher-enable-debian-multiarch-triplet-like-environment-variable-in-the-snap-runtime/11738
   debian-multiarch-triplet-provider-launch:
     source: https://github.com/brlin-tw/debian-multiarch-triplet-provider-launch.git
-    source-tag: v1.0.0
+    source-tag: v1.0.2
     plugin: dump
     stage:
       - bin/debian-multiarch-triplet-provider-launch
